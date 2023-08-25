@@ -1,4 +1,4 @@
-package org.dandan.dto;
+package org.dandan.security.dto;
 
 import lombok.Data;
 

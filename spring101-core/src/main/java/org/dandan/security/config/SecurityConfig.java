@@ -1,4 +1,4 @@
-package org.dandan.config;
+package org.dandan.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,10 +35,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeRequests(
-                    requests -> requests
-                            .anyRequest().permitAll()
-            )
+                .authorizeRequests(
+                        requests -> requests
+                                .anyRequest().permitAll()
+                )
                 .csrf().disable();
 
 
