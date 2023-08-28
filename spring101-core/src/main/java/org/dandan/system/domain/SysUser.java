@@ -1,9 +1,13 @@
 package org.dandan.system.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,6 +15,9 @@ import java.util.Date;
  * 系统用户
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "sys_user")
 public class SysUser implements Serializable {
