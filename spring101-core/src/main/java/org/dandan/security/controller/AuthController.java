@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dandan.config.RsaProperties;
 import org.dandan.security.dto.AuthUserDto;
+import org.dandan.security.dto.SignUpRequest;
+import org.dandan.security.service.JwtService;
+import org.dandan.security.service.UserService;
 import org.dandan.system.domain.SysUser;
 import org.dandan.system.repository.SysUserRepository;
 import org.dandan.utils.RsaUtils;
@@ -18,6 +21,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -29,33 +34,59 @@ import java.util.Map;
 @Tag(name = "登入驗證")
 @RequiredArgsConstructor
 public class AuthController {
-//    @Resource
-//    private AuthenticationManagerBuilder authenticationManagerBuilder;
+
 
     private final AuthenticationManager authenticationManager;
     private final SysUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final UserService userService;
+    @PostMapping("/authenticate")
+    public ResponseEntity<Object> login(@RequestBody AuthUserDto request) {
 
-    @PostMapping("/signin")
-    public ResponseEntity<Object> signin(@RequestBody AuthUserDto request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        Map<String, Object> authInfo = authenticateAndGetToken(request.getUsername(), request.getPassword());
 
-        Map<String, Object> authInfo = new HashMap<String, Object>();
-        authInfo.put("name", authentication.getName());
-
-        return ResponseEntity.ok(authentication.getPrincipal());
+        return ResponseEntity.ok(authInfo);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> signup(@RequestBody AuthUserDto request) {
+    public ResponseEntity<Object> signup(@RequestBody SignUpRequest request) throws Exception {
 
-        var user = SysUser.builder().username(request.getUsername()).password(request.getPassword()).build();
-        userRepository.save(user);
+        if (userService.hasUserWithUsername(request.getUsername())) {
+            throw new Exception(String.format("Username %s already been used", request.getUsername()));
+        }
 
+        userService.saveUser(mapSignUpRequestToUser(request));
+        Map<String, Object> authInfo = authenticateAndGetToken(request.getUsername(), request.getPassword());
 
-        return ResponseEntity.ok("jwt token");
+        return ResponseEntity.ok(authInfo);
     }
 
+    private Map<String, Object> authenticateAndGetToken(String username, String password) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
+
+        UserDetails user = (UserDetails) authentication.getPrincipal();
+        var jwt = jwtService.generateToken(user);
+
+        Map<String, Object> authInfo = new HashMap<String, Object>();
+        authInfo.put("name", authentication.getName());
+        authInfo.put("token", jwt);
+
+        return authInfo;
+
+    }
+
+    private SysUser mapSignUpRequestToUser(SignUpRequest signUpRequest) {
+        SysUser user = new SysUser();
+        user.setUsername(signUpRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        user.setEmail(signUpRequest.getEmail());
+//        user.setRole(WebSecurityConfig.USER);
+//        user.setProvider(OAuth2Provider.LOCAL);
+        return user;
+    }
 
 //    @PostMapping("/login")
 //    @Operation(summary = "登入api", description = "返回token")
