@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dandan.config.RsaProperties;
 import org.dandan.security.dto.AuthUserDto;
+import org.dandan.security.dto.CustomUserDetails;
 import org.dandan.security.dto.SignUpRequest;
 import org.dandan.security.service.JwtService;
 import org.dandan.security.service.UserService;
@@ -41,6 +42,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserService userService;
+
     @PostMapping("/authenticate")
     public ResponseEntity<Object> login(@RequestBody AuthUserDto request) {
 
@@ -67,12 +69,14 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
 
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        var jwt = jwtService.generateToken(user);
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+        var token = jwtService.generate(authentication);
 
         Map<String, Object> authInfo = new HashMap<String, Object>();
-        authInfo.put("name", authentication.getName());
-        authInfo.put("token", jwt);
+        authInfo.put("name", user.getName());
+        authInfo.put("username", user.getUsername());
+        authInfo.put("email", user.getEmail());
+        authInfo.put("token", token);
 
         return authInfo;
 

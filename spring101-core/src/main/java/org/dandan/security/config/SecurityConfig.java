@@ -2,6 +2,7 @@ package org.dandan.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.dandan.security.service.CustomUserDetailsService;
+import org.dandan.security.service.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -25,36 +27,17 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//            .authorizeRequests(
-//                    requests -> requests
-//                            .requestMatchers("/auth/test").permitAll()
-//
-//////                            .requestMatchers("/swagger-ui.html").permitAll()
-//////                            .requestMatchers("/test/admin").hasRole("ADMIN")
-//////                            .requestMatchers("/test/normal").hasRole("NORMAL")
-//////                            .anyRequest().permitAll()
-////                            .anyRequest().authenticated()
-////
-//            )
-//
-//            .formLogin(withDefaults())
-//            .httpBasic(withDefaults());
-//        return http.build();
-//    }
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests(
-                        requests -> requests
-                                .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**").permitAll()
-                                .anyRequest().permitAll()
-                )
+                .authorizeRequests(requests -> requests
+                        .requestMatchers("/public/**", "/auth/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated())
+                .logout(l -> l.logoutSuccessUrl("/").permitAll())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

@@ -1,5 +1,7 @@
 
 spring:
+  application:
+    name: spring101
   redis:
     host: 127.0.0.1  # Redis 伺服器的主機名或 IP 地址
     port: 16379  # Redis 伺服器的連接埠
