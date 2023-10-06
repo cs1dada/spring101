@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Optional;
 
 public interface JwtService {
-    String generateToken(UserDetails userDetails);
+    //String generateToken(UserDetails userDetails);
 
     String generate(Authentication authentication);
     Optional<Jws<Claims>> validateTokenAndGetJws(String token);

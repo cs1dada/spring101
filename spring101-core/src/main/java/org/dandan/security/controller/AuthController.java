@@ -66,6 +66,8 @@ public class AuthController {
 
     private Map<String, Object> authenticateAndGetToken(String username, String password) {
 
+        log.info("=== authenticateAndGetToken: " + username + "/ "+ password);
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
 
@@ -114,22 +116,22 @@ public class AuthController {
 //
 //        return ResponseEntity.ok(authInfo);
 //    }
-
-    @PostMapping("/test")
-    @Operation(summary = "post測試api", description = "返回token")
-    public ResponseEntity<Object> test(@RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
-
-        Map<String, Object> authInfo = new HashMap<String, Object>();
-        authInfo.put("token", "11112222333");
-
-
-        return ResponseEntity.ok(authInfo);
-    }
-
-    @GetMapping(value = "/info")
-    public ResponseEntity<Object> getUserInfo() {
-        Map<String, Object> user = new HashMap<String, Object>();
-        user.put("user", "11111111111111111111111111");
-        return ResponseEntity.ok(user);
-    }
+//
+//    @PostMapping("/test")
+//    @Operation(summary = "post測試api", description = "返回token")
+//    public ResponseEntity<Object> test(@RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
+//
+//        Map<String, Object> authInfo = new HashMap<String, Object>();
+//        authInfo.put("token", "11112222333");
+//
+//
+//        return ResponseEntity.ok(authInfo);
+//    }
+//
+//    @GetMapping(value = "/info")
+//    public ResponseEntity<Object> getUserInfo() {
+//        Map<String, Object> user = new HashMap<String, Object>();
+//        user.put("user", "11111111111111111111111111");
+//        return ResponseEntity.ok(user);
+//    }
 }

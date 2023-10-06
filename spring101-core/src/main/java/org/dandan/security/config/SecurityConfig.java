@@ -2,7 +2,7 @@ package org.dandan.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.dandan.security.service.CustomUserDetailsService;
-import org.dandan.security.service.JwtAuthenticationFilter;
+import org.dandan.security.service.TokenAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +27,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .logout(l -> l.logoutSuccessUrl("/").permitAll())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
