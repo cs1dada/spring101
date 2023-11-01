@@ -23,6 +23,12 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private Set<SysUser> users;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "sys_roles_menus",
+            joinColumns = {@JoinColumn(name = "role_id",referencedColumnName = "role_id")},
+            inverseJoinColumns = {@JoinColumn(name = "menu_id",referencedColumnName = "menu_id")})
+    private Set<Menu> menus;
+
     @NotBlank
     @Column(name = "name")
     private String name;
