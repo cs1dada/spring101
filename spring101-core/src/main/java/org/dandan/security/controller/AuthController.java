@@ -26,8 +26,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -68,17 +71,28 @@ public class AuthController {
 
         log.info("=== authenticateAndGetToken: " + username + "/ "+ password);
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password));
-
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        var token = jwtService.generate(authentication);
-
         Map<String, Object> authInfo = new HashMap<String, Object>();
-        authInfo.put("name", user.getName());
-        authInfo.put("username", user.getUsername());
-        authInfo.put("email", user.getEmail());
-        authInfo.put("token", token);
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
+
+            CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+            var token = jwtService.generate(authentication);
+
+            authInfo.put("name", user.getName());
+            authInfo.put("username", user.getUsername());
+            authInfo.put("email", user.getEmail());
+            authInfo.put("authorities",user.getAuthorities());
+            authInfo.put("token", token);
+        } catch (Exception e) {
+            log.info("=== authenticateAndGetToken fail !!!! ===  ");
+            log.info(Arrays.stream(e.getStackTrace())
+                    .map(StackTraceElement::toString)
+                    .collect(Collectors.joining("\n")));
+        }
+
+
 
         return authInfo;
 
@@ -128,10 +142,13 @@ public class AuthController {
 //        return ResponseEntity.ok(authInfo);
 //    }
 //
-//    @GetMapping(value = "/info")
-//    public ResponseEntity<Object> getUserInfo() {
-//        Map<String, Object> user = new HashMap<String, Object>();
-//        user.put("user", "11111111111111111111111111");
-//        return ResponseEntity.ok(user);
-//    }
+    @GetMapping(value = "/info")
+    public ResponseEntity<Object> getUserInfo() {
+        Map<String, Object> user = new HashMap<String, Object>();
+
+        Optional<SysUser> u = userService.findByUsername("user3");
+        user.put("user", "11111111111111111111111111");
+        user.put("SysUser", u.toString());
+        return ResponseEntity.ok(user);
+    }
 }

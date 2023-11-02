@@ -6,6 +6,8 @@ import org.dandan.system.domain.SysUser;
 import org.dandan.system.repository.SysUserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,6 +27,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public SysUser saveUser(SysUser user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<SysUser> findByUsername(String name) {
+        return userRepository.findByUsername(name);
     }
 
 

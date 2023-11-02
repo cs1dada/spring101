@@ -65,6 +65,12 @@ spring:
         cachecontrol:
           max-age:
 
+logging:
+  level:
+    root: INFO
+
+
+
 # 登录相关配置
 login:
   #  是否限制单用户登录

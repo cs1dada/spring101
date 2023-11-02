@@ -1,10 +1,13 @@
 package org.dandan.security.service;
 
 import lombok.RequiredArgsConstructor;
+import org.dandan.security.dto.AuthorityDto;
 import org.dandan.security.dto.CustomUserDetails;
 import org.dandan.security.dto.JwtUserDto;
 import org.dandan.system.domain.SysUser;
 import org.dandan.system.repository.SysUserRepository;
+import org.dandan.system.service.RoleService;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,11 +18,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
+    private final RoleService roleService;
     private final SysUserRepository userRepository;
 
     @Override
@@ -29,19 +34,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         //todo 還沒有role
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        //List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
+
+        List<AuthorityDto> authorityDtoList = roleService.mapToGrantedAuthorities(user);
+
+        authorities = authorityDtoList.stream()
+                .map(authorityDto -> new SimpleGrantedAuthority(authorityDto.getAuthority()))
+                .collect(Collectors.toList());
 
         return mapUserToCustomUserDetails(user, authorities);
-
-//        JwtUserDto jwtUserDto;
-
-//        Optional<SysUser> user = userRepository.findByUsername(username);
-//        if (user.isEmpty()) {
-//            throw new UsernameNotFoundException("");
-//        } else {
-//            jwtUserDto = new JwtUserDto(user.get());
-//        }
-//        return jwtUserDto;
     }
 
     private CustomUserDetails mapUserToCustomUserDetails(SysUser user, List<SimpleGrantedAuthority> authorities) {
