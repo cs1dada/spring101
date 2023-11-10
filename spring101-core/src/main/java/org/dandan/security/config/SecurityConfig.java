@@ -1,6 +1,7 @@
 package org.dandan.security.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dandan.security.service.CustomUserDetailsService;
 import org.dandan.security.service.TokenAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -13,14 +14,19 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Collection;
+
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -31,10 +37,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+
         http
                 .authorizeRequests(requests -> requests
                         .requestMatchers("/public/**", "/auth/**", "/oauth2/**").permitAll()
                         .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
+//                        .requestMatchers("/sysUser/**").hasAnyRole("menu:add", "user:list") //role無效
+                        .requestMatchers("/sysUser/**").hasAnyAuthority("user:list") //auth有效
                         .anyRequest().authenticated())
                 .logout(l -> l.logoutSuccessUrl("/").permitAll())
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

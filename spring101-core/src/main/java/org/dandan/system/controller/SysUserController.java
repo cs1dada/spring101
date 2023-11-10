@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.dandan.system.dto.SysUserDTO;
 import org.dandan.system.service.SysUserService;
 import org.dandan.system.vo.SysUserQueryVO;
@@ -11,11 +12,17 @@ import org.dandan.system.vo.SysUserUpdateVO;
 import org.dandan.system.vo.SysUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static org.dandan.config.SwaggerConfig.BEARER_KEY_SECURITY_SCHEME;
+import java.util.Collection;
 
+import static org.dandan.config.SwaggerConfig.BEARER_KEY_SECURITY_SCHEME;
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/sysUser")
@@ -44,6 +51,8 @@ public class SysUserController {
     }
 
     @GetMapping("/{id}")
+//    @PreAuthorize("hasAnyAuthority('menu:add', 'user:list')") //無效
+//    @PreAuthorize("hasAuthority('menu:add')") //無效
     @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
     public SysUserDTO getById(@Valid @NotNull @PathVariable("id") Long id) {
         return sysUserService.getById(id);
