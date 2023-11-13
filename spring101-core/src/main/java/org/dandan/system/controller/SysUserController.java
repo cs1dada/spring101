@@ -51,10 +51,18 @@ public class SysUserController {
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyAuthority('menu:add', 'user:list')") //無效
-//    @PreAuthorize("hasAuthority('menu:add')") //無效
+//    @PreAuthorize("hasAnyRole('menu:add', 'user:list')") //無效
+    @PreAuthorize("hasAnyAuthority('menu:add')") //有效
     @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
     public SysUserDTO getById(@Valid @NotNull @PathVariable("id") Long id) {
+        return sysUserService.getById(id);
+    }
+
+    @GetMapping("/test/{id}")
+//    @PreAuthorize("hasAnyRole('menu:add', 'user:list')") //無效
+    @PreAuthorize("hasAnyAuthority('user:list')") //無效
+    @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
+    public SysUserDTO getById2(@Valid @NotNull @PathVariable("id") Long id) {
         return sysUserService.getById(id);
     }
 
