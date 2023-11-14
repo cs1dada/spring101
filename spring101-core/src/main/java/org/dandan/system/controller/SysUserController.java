@@ -58,7 +58,7 @@ public class SysUserController {
         return sysUserService.getById(id);
     }
 
-    @GetMapping("/test/{id}")
+    @GetMapping("/test/{id}") //測試用
 //    @PreAuthorize("hasAnyRole('menu:add', 'user:list')") //無效
     @PreAuthorize("hasAnyAuthority('user:list')") //無效
     @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})

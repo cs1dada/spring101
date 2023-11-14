@@ -1,7 +1,9 @@
 package org.dandan;
 
+import org.dandan.utils.SpringContextHolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +21,11 @@ public class spring101Application
         SpringApplication.run(spring101Application.class, args);
 
 
+    }
+
+    @Bean
+    public SpringContextHolder springContextHolder(){
+            return new SpringContextHolder();
     }
 
     /**
