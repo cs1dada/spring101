@@ -30,6 +30,7 @@ public class RoleService {
         /*
         * flatMap(role -> role.getMenus().stream())
         * 使用 flatMap，將每個角色的菜單集合轉換為單獨的流，以便它們可以合併為一個大的流。
+        * menu/Permission 存user權限
         * */
 
         Set<Role> roles = roleRepository.findByUserId(user.getUserId());

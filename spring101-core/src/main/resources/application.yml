@@ -15,7 +15,18 @@ spring:
         enabled: false
 #  pid:
 #    file: /自行指定位置/eladmin.pid
-
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+            scope: read:user, user:email
+          google:
+            clientId: 492022338926-47lidtovuh8mk64e9oer8cooqa81gjs5.apps.googleusercontent.com
+            clientSecret: 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
+            scope: profile, email
   #配置 Jpa
   jpa:
     hibernate:
@@ -33,6 +44,23 @@ spring:
     password: ${REDIS_PWD:}
     #连接超时时间
     timeout: 5000
+
+
+app:
+  jwt:
+    # Signing key for HS512 algorithm
+    # In http://www.allkeysgenerator.com/ you can generate all kinds of keys
+    secret: v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVkYp
+    expiration:
+      minutes: 10
+  oauth2:
+    redirectUri: http://localhost:3000/oauth2/redirect
+  cors:
+    allowed-origins: http://localhost:3000
+
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 task:
   pool:
@@ -61,14 +89,3 @@ rsa:
 token:
   signing:
     key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
-app:
-  jwt:
-    # Signing key for HS512 algorithm
-    # In http://www.allkeysgenerator.com/ you can generate all kinds of keys
-    secret: v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVkYp
-    expiration:
-      minutes: 10
-  oauth2:
-    redirectUri: http://localhost:3000/oauth2/redirect
-  cors:
-    allowed-origins: http://localhost:3000

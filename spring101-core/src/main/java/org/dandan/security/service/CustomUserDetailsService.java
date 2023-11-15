@@ -32,9 +32,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         SysUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found", username)));
 
-        //todo 還沒有role
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
+        // 取出user's AuthorityDto
         List<AuthorityDto> authorityDtoList = roleService.mapToGrantedAuthorities(user);
 
         authorities = authorityDtoList.stream()
