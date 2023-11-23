@@ -7,6 +7,7 @@ import lombok.Data;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
+import org.dandan.security.enums.OAuth2Provider;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -135,4 +136,6 @@ public class SysUser implements Serializable {
     @Column(name = "update_time")
     private Date updateTime;
 
+    @Enumerated(EnumType.STRING)
+    private OAuth2Provider provider;
 }

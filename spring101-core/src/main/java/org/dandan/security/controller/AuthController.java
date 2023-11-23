@@ -103,6 +103,7 @@ public class AuthController {
         user.setUsername(signUpRequest.getUsername());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setEmail(signUpRequest.getEmail());
+        //todo authority 還沒處理
 //        user.setRole(WebSecurityConfig.USER);
 //        user.setProvider(OAuth2Provider.LOCAL);
         return user;

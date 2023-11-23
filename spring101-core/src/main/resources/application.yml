@@ -23,7 +23,7 @@ spring:
             clientId: ${GITHUB_CLIENT_ID}
             clientSecret: ${GITHUB_CLIENT_SECRET}
             scope: read:user, user:email
-          google:
+          google: # http://localhost:8000/oauth2/authorization/google 測試
             clientId: 492022338926-47lidtovuh8mk64e9oer8cooqa81gjs5.apps.googleusercontent.com
             clientSecret: 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
             scope: profile, email

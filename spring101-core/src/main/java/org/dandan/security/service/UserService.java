@@ -13,4 +13,6 @@ public interface UserService {
 
     Optional<SysUser> findByUsername(String name);
 
+    Optional<SysUser> findByEmail(String email);
+
 }

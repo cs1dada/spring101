@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,11 @@ import java.util.stream.Collectors;
 public class RoleService {
 
     private final RoleRepository roleRepository;
+
+    public Optional<Role> findById(Long id) {
+        return roleRepository.findById(id);
+    }
+
     public List<AuthorityDto> mapToGrantedAuthorities(SysUser user) {
         Set<String> permissions = new HashSet<>();
         if (user.getAdmin()) {
