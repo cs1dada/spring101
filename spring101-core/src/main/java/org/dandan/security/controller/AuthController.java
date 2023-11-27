@@ -12,8 +12,10 @@ import org.dandan.security.dto.CustomUserDetails;
 import org.dandan.security.dto.SignUpRequest;
 import org.dandan.security.service.JwtService;
 import org.dandan.security.service.UserService;
+import org.dandan.system.domain.Role;
 import org.dandan.system.domain.SysUser;
 import org.dandan.system.repository.SysUserRepository;
+import org.dandan.system.service.RoleService;
 import org.dandan.utils.RsaUtils;
 import org.springframework.http.ResponseEntity;
 
@@ -26,10 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,6 +44,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserService userService;
+    private final RoleService roleService;
 
     @PostMapping("/authenticate")
     public ResponseEntity<Object> login(@RequestBody AuthUserDto request) {
@@ -103,7 +103,9 @@ public class AuthController {
         user.setUsername(signUpRequest.getUsername());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setEmail(signUpRequest.getEmail());
-        //todo authority 還沒處理
+        //default 普通用戶 (role id 2)
+        Optional<Role> normal = roleService.findById(2L);
+        user.setRoles(normal.map(Collections::singleton).orElse(Collections.emptySet()));
 //        user.setRole(WebSecurityConfig.USER);
 //        user.setProvider(OAuth2Provider.LOCAL);
         return user;
