@@ -19,6 +19,7 @@
     <modules>
         <module>spring101-common</module>
         <module>spring101-core</module>
+        <module>spring101-logging</module>
     </modules>
 
 
@@ -70,11 +71,24 @@
             <version>${springdoc.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/net.dreamlu/mica-ip2region -->
+        <dependency>
+            <groupId>net.dreamlu</groupId>
+            <artifactId>mica-ip2region</artifactId>
+            <version>2.7.12</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83</version>
         </dependency>
     </dependencies>
 
