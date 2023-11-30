@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.dandan.annotation.Log;
 import org.dandan.system.dto.SysUserDTO;
 import org.dandan.system.service.SysUserService;
 import org.dandan.system.vo.SysUserQueryVO;
@@ -50,15 +51,17 @@ public class SysUserController {
         sysUserService.update(id, vO);
     }
 
+    @Log("查詢用户")
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('menu:add', 'user:list')") //無效
 //    @PreAuthorize("hasAnyAuthority('menu:add')") //有效
-    @PreAuthorize("@el.check('menu:add')") //有效
+    @PreAuthorize("@el.check('menu:add','user:list')") //有效
     @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
     public SysUserDTO getById(@Valid @NotNull @PathVariable("id") Long id) {
         return sysUserService.getById(id);
     }
 
+    @Log("查詢用户test")
     @GetMapping("/test/{id}") //測試用
 //    @PreAuthorize("hasAnyRole('menu:add', 'user:list')") //無效
 //    @PreAuthorize("hasAnyAuthority('user:list')") //有效
