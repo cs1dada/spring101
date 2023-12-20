@@ -55,7 +55,7 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(requests -> requests
-                    .requestMatchers("/public/**", "/auth/**", "/oauth2/**").permitAll()
+                    .requestMatchers("/public/**", "/auth/**", "/oauth2/**", "/sysQuartzJob/**").permitAll()
                     .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
     //                        .requestMatchers("/sysUser/**").hasAnyRole("menu:add", "user:list") //role無效
     //                        .requestMatchers("/sysUser/**").hasAnyAuthority("user:list") //auth有效

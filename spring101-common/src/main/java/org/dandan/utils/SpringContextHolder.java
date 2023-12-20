@@ -30,6 +30,8 @@ import java.util.List;
 /**
  * @author Jie
  * @date 2019-01-07
+ *
+ * 在 spring101Application 初始化 !!!
  */
 @Slf4j
 public class SpringContextHolder implements ApplicationContextAware, DisposableBean {
