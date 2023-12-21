@@ -61,6 +61,36 @@ public class QuartzManage {
         }
     }
 
+    /**
+     * 更新job cron表达式
+     * @param quartzJob /
+     */
+    public void updateJobCron(SysQuartzJob quartzJob){
+        try {
+            TriggerKey triggerKey = TriggerKey.triggerKey(JOB_NAME + quartzJob.getJobId(), "dandan");
+            CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+            // 如果不存在则创建一个定时任务
+            if(trigger == null){
+                addJob(quartzJob);
+                trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+            }
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(quartzJob.getCronExpression());
+            trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
+            //重置启动时间
+            ((CronTriggerImpl)trigger).setStartTime(new Date());
+            trigger.getJobDataMap().put(SysQuartzJob.JOB_KEY, quartzJob);
+
+            scheduler.rescheduleJob(triggerKey, trigger);
+            // 暂停任务
+            if (quartzJob.getPause()) {
+                pauseJob(quartzJob);
+            }
+        } catch (Exception e){
+            log.error("更新定时任务失败", e);
+            throw new BadRequestException("更新定时任务失败");
+        }
+
+    }
 
     /**
      * 立即执行job
@@ -97,15 +127,45 @@ public class QuartzManage {
         }
     }
 
+    /**
+     * 刪除一个job
+     * @param quartzJob
+     */
+    public void deleteJob(SysQuartzJob quartzJob) {
+        JobKey jobKey = JobKey.jobKey(JOB_NAME + quartzJob.getJobId(), "dandan");
+        try {
+            scheduler.pauseJob(jobKey);
+            scheduler.deleteJob(jobKey);
+        } catch (SchedulerException e) {
+            log.error("删除定时任务失败", e);
+            throw new BadRequestException("删除定时任务失败");
+        }
+    }
+
+    /**
+     * 取得正在執行的所有job
+     * @return
+     * @throws SchedulerException
+     */
     public List<JobExecutionContext> getCurrentlyExecutingJobs() throws SchedulerException {
         return scheduler.getCurrentlyExecutingJobs();
     }
 
+    /**
+     * 取得所有job的key
+     * @return
+     * @throws SchedulerException
+     */
     public List<JobKey> getJobKeys() throws SchedulerException {
         Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.anyGroup());
         return new ArrayList<>(jobKeys);
     }
 
+    /**
+     * 取得所有job的JobDetail
+     * @return
+     * @throws SchedulerException
+     */
     public List<JobDetail> getJobDetails() throws SchedulerException {
         Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.anyGroup());
         List<JobDetail> list = new ArrayList<>();

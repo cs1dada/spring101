@@ -62,29 +62,4 @@ public class SysQuartzJobController {
         return sysQuartzJobService.query(vO);
     }
 
-    /**
-     * 執行特定job (批次程式)
-     * @param id
-     * @return
-     */
-    @PutMapping(value = "/exec/{id}")
-    @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
-    public ResponseEntity<Object> executionQuartzJob(@PathVariable Long id){
-        sysQuartzJobService.execution(sysQuartzJobService.getSysQuartzJobById(id));
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    /**
-     * 顯示所有註冊的 job
-     * @param jobName
-     * @return
-     * @throws SchedulerException
-     */
-    @GetMapping("/displayJobs/{jobName}")
-    @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
-    public List<QuartzJobInfoDTO> displayJobs(@Valid @NotNull @PathVariable("jobName") String jobName) throws SchedulerException {
-        return sysQuartzJobService.displayRegisteredJobs(jobName);
-    }
-
-
 }

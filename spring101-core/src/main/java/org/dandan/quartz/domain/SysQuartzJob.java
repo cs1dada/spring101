@@ -45,7 +45,7 @@ public class SysQuartzJob implements Serializable {
      * 状态：1暂停、0启用
      */
     @Column(name = "is_pause")
-    private Boolean pause;
+    private Boolean pause = false;
 
     /**
      * 任务名称

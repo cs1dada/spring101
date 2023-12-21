@@ -58,7 +58,7 @@ public class ExecutionJob extends QuartzJobBean {
             // 判断是否存在子任务
             if(StringUtils.isNotBlank(quartzJob.getSubTask())){
                 String[] tasks = quartzJob.getSubTask().split("[,，]");
-                // 执行子任务
+                // 执行子任务 todo
                 //quartzJobService.executionSubJob(tasks);
             }
         } catch (Exception e) {
