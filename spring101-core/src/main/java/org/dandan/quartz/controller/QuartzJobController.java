@@ -57,35 +57,24 @@ public class QuartzJobController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    //刪除job
-    @DeleteMapping
-    @Operation(summary = "刪除job", security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
-    public ResponseEntity<Object> deleteQuartzJob(@RequestBody Set<Long> ids){
-        sysQuartzJobService.delete(ids);
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
     //修改job
     @PutMapping
     @Operation(summary = "修改job", security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
     public ResponseEntity<Object> updateQuartzJob(@Validated @RequestBody SysQuartzJob resources){
-
         // 验证Bean是不是合法的，合法的定时任务 Bean 需要用 @Service 定义
         checkBean(resources.getBeanName());
         //新增job並且+到scheduler
         sysQuartzJobService.update(resources);
-
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    //暫停job
-    //執行job
-
-
-
-
+    //修改job
+    @PutMapping(value = "/{id}")
+    @Operation(summary = "修改job狀態", security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
+    public ResponseEntity<Object> updateQuartzJobStatus(@PathVariable Long id){
+        sysQuartzJobService.updateIsPause(sysQuartzJobService.getSysQuartzJobById(id));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
     /**
      * 執行job (批次程式)
      * @param id
@@ -97,6 +86,25 @@ public class QuartzJobController {
         sysQuartzJobService.execution(sysQuartzJobService.getSysQuartzJobById(id));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    //刪除job
+    @DeleteMapping
+    @Operation(summary = "刪除job", security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
+    public ResponseEntity<Object> deleteQuartzJob(@RequestBody Set<Long> ids){
+        sysQuartzJobService.delete(ids);
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+
+
+    //暫停job
+    //執行job
+
+
+
+
+
 
     /**
      * 查詢job or 所有註冊的job

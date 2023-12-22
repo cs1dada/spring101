@@ -17,6 +17,15 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.util.concurrent.Future;
 
+/**
+ *
+ * 封裝job的地方
+ * - 執行job的前後塞log紀錄
+ * - 傳外部參數給job
+ * - 例外處理
+ *
+ */
+
 @Async
 public class ExecutionJob extends QuartzJobBean {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -75,7 +84,7 @@ public class ExecutionJob extends QuartzJobBean {
             if(quartzJob.getPauseAfterFailure() != null && quartzJob.getPauseAfterFailure()){
                 quartzJob.setPause(false);
                 //更新状态
-                //quartzJobService.updateIsPause(quartzJob);
+                quartzJobService.updateIsPause(quartzJob);
             }
             if(quartzJob.getEmail() != null) {
 //                EmailService emailService = SpringContextHolder.getBean(EmailService.class);

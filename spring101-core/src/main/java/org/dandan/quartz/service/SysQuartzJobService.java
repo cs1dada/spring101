@@ -31,13 +31,6 @@ public class SysQuartzJobService {
     private final SysQuartzJobRepository sysQuartzJobRepository;
     private final QuartzManage quartzManage;
 
-    @Transactional
-    public Long save(SysQuartzJobVO vO) {
-        SysQuartzJob bean = new SysQuartzJob();
-        BeanUtils.copyProperties(vO, bean);
-        bean = sysQuartzJobRepository.save(bean);
-        return bean.getJobId();
-    }
 
     @Transactional
     public Long create(SysQuartzJob resource) {
@@ -52,11 +45,6 @@ public class SysQuartzJobService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        sysQuartzJobRepository.deleteById(id);
-    }
-
-    @Transactional
     public void delete(Set<Long> ids) {
         for (Long id : ids) {
             SysQuartzJob sysQuartzJobjob = requireOne(id);
@@ -65,13 +53,6 @@ public class SysQuartzJobService {
             // 刪除job item
             sysQuartzJobRepository.deleteById(id);
         }
-    }
-
-    @Transactional
-    public void update(Long id, SysQuartzJobUpdateVO vO) {
-        SysQuartzJob bean = requireOne(id);
-        BeanUtils.copyProperties(vO, bean);
-        sysQuartzJobRepository.save(bean);
     }
 
     @Transactional
@@ -86,6 +67,48 @@ public class SysQuartzJobService {
         return resource.getJobId();
 
     }
+
+    public void updateIsPause(SysQuartzJob quartzJob) {
+        if (quartzJob.getPause()) {
+            //原本暫停 => 啟動job
+            quartzManage.resumeJob(quartzJob);
+            quartzJob.setPause(false);
+        } else {
+            //原本啟動 => 暫停job
+            quartzManage.pauseJob(quartzJob);
+            quartzJob.setPause(true);
+        }
+        sysQuartzJobRepository.save(quartzJob);
+    }
+
+    public void execution(SysQuartzJob quartzJob) {
+        quartzManage.runJobNow(quartzJob);
+    }
+
+    /**
+     *      this part is new
+     */
+
+
+    @Transactional
+    public Long save(SysQuartzJobVO vO) {
+        SysQuartzJob bean = new SysQuartzJob();
+        BeanUtils.copyProperties(vO, bean);
+        bean = sysQuartzJobRepository.save(bean);
+        return bean.getJobId();
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        sysQuartzJobRepository.deleteById(id);
+    }
+    @Transactional
+    public void update(Long id, SysQuartzJobUpdateVO vO) {
+        SysQuartzJob bean = requireOne(id);
+        BeanUtils.copyProperties(vO, bean);
+        sysQuartzJobRepository.save(bean);
+    }
+
 
     public SysQuartzJobDTO getById(Long id) {
         SysQuartzJob original = requireOne(id);
@@ -111,9 +134,7 @@ public class SysQuartzJobService {
                 .orElseThrow(() -> new NoSuchElementException("Resource not found: " + id));
     }
 
-    public void execution(SysQuartzJob quartzJob) {
-        quartzManage.runJobNow(quartzJob);
-    }
+
 
     /**
      * 顯示已註冊的job

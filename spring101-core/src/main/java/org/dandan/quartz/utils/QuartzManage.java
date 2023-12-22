@@ -2,6 +2,7 @@ package org.dandan.quartz.utils;
 
 
 import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dandan.exception.BadRequestException;
 import org.dandan.quartz.domain.SysQuartzJob;
@@ -18,13 +19,18 @@ import java.util.stream.Collectors;
 
 import static org.quartz.TriggerBuilder.newTrigger;
 
+/**
+ *  1. handle job 跟 scheduler 之間的動作, crud + pause
+ *  2. 取得job 的 metadata
+ */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class QuartzManage {
     private static final String JOB_NAME = "TASK_";
 
     @Resource
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
 
     /**
      * 新增job到quartz裡面, 準備執行
@@ -53,6 +59,7 @@ public class QuartzManage {
 
             // 暂停任务
             if (quartzJob.getPause()) {
+                log.info("addJob success !!! ... but pause now");
                 pauseJob(quartzJob);
             }
         } catch (Exception e){
@@ -93,6 +100,42 @@ public class QuartzManage {
     }
 
     /**
+     * 刪除一个job
+     * @param quartzJob
+     */
+    public void deleteJob(SysQuartzJob quartzJob) {
+        JobKey jobKey = JobKey.jobKey(JOB_NAME + quartzJob.getJobId(), "dandan");
+        try {
+            scheduler.pauseJob(jobKey);
+            scheduler.deleteJob(jobKey);
+        } catch (SchedulerException e) {
+            log.error("删除定时任务失败", e);
+            throw new BadRequestException("删除定时任务失败");
+        }
+    }
+
+    /**
+     * 恢复一个job
+     * @param quartzJob /
+     */
+    public void resumeJob(SysQuartzJob quartzJob){
+        try {
+            TriggerKey triggerKey = TriggerKey.triggerKey(JOB_NAME + quartzJob.getJobId(),"dandan");
+            CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+            // 如果不存在则创建一个定时任务
+            if(trigger == null) {
+                log.info("resume a not exist Job..... \n addJob now !!!");
+                addJob(quartzJob);
+            }
+            JobKey jobKey = JobKey.jobKey(JOB_NAME + quartzJob.getJobId());
+            scheduler.resumeJob(jobKey);
+        } catch (Exception e){
+            log.error("恢复定时任务失败", e);
+            throw new BadRequestException("恢复定时任务失败");
+        }
+    }
+
+    /**
      * 立即执行job
      * @param quartzJob /
      */
@@ -113,6 +156,7 @@ public class QuartzManage {
             throw new BadRequestException("定时任务执行失败");
         }
     }
+
     /**
      * 暂停一个job
      * @param quartzJob /
@@ -124,21 +168,6 @@ public class QuartzManage {
         } catch (Exception e){
             log.error("定时任务暂停失败", e);
             throw new BadRequestException("定时任务暂停失败");
-        }
-    }
-
-    /**
-     * 刪除一个job
-     * @param quartzJob
-     */
-    public void deleteJob(SysQuartzJob quartzJob) {
-        JobKey jobKey = JobKey.jobKey(JOB_NAME + quartzJob.getJobId(), "dandan");
-        try {
-            scheduler.pauseJob(jobKey);
-            scheduler.deleteJob(jobKey);
-        } catch (SchedulerException e) {
-            log.error("删除定时任务失败", e);
-            throw new BadRequestException("删除定时任务失败");
         }
     }
 
