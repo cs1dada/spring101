@@ -2,6 +2,7 @@ package org.dandan.quartz.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.Set;
 import static org.dandan.config.SwaggerConfig.BEARER_KEY_SECURITY_SCHEME;
 
 @Slf4j
+@Tag(name = "quartz 服務")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/jobs")

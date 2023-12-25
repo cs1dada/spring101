@@ -124,10 +124,12 @@ public class QuartzManage {
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
             // 如果不存在则创建一个定时任务
             if(trigger == null) {
-                log.info("resume a not exist Job..... \n addJob now !!!");
+                log.info("resume a not exist Job.....");
+                log.info("addJob now !!!");
                 addJob(quartzJob);
             }
-            JobKey jobKey = JobKey.jobKey(JOB_NAME + quartzJob.getJobId());
+            JobKey jobKey = JobKey.jobKey(JOB_NAME + quartzJob.getJobId(),"dandan");
+            log.info("resume a exist Job.....");
             scheduler.resumeJob(jobKey);
         } catch (Exception e){
             log.error("恢复定时任务失败", e);

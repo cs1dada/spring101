@@ -69,12 +69,15 @@ public class SysQuartzJobService {
     }
 
     public void updateIsPause(SysQuartzJob quartzJob) {
+
         if (quartzJob.getPause()) {
             //原本暫停 => 啟動job
+            log.info("原本暫停 => 啟動job");
             quartzManage.resumeJob(quartzJob);
             quartzJob.setPause(false);
         } else {
             //原本啟動 => 暫停job
+            log.info("原本啟動 => 暫停job");
             quartzManage.pauseJob(quartzJob);
             quartzJob.setPause(true);
         }
